@@ -1,0 +1,126 @@
+# DFS in Python
+
+graph = {
+    'A': ['B', 'C'],
+    'B': ['D', 'E'],
+    'C': ['F'],
+    'D': [],
+    'E': [],
+    'F': []
+}
+
+visited = set()
+
+def dfs(node):
+    if node not in visited:
+        print(node, end=" ")
+        visited.add(node)
+
+        for neighbour in graph[node]:
+            dfs(neighbour)
+
+print("DFS Traversal:")
+dfs('A')  
+
+
+# BFS in Python
+
+from collections import deque
+
+graph = {
+    'A': ['B', 'C'],
+    'B': ['D', 'E'],
+    'C': ['F'],
+    'D': [],
+    'E': [],
+    'F': []
+}
+
+visited = set()
+queue = deque()
+
+def bfs(start):
+    visited.add(start)
+    queue.append(start)
+
+    while queue:
+        node = queue.popleft()
+        print(node, end=" ")
+
+        for neighbour in graph[node]:
+            if neighbour not in visited:
+                visited.add(neighbour)
+                queue.append(neighbour)
+
+print("BFS Traversal:")
+bfs('A')
+
+
+
+#A star
+graph = {
+    'S': {'A': 1, 'B': 4},
+    'A': {'C': 2, 'D': 5},
+    'B': {'D': 1},
+    'C': {'G': 3},
+    'D': {'G': 2},
+    'G': {}
+}
+
+h = {'S': 6, 'A': 4, 'B': 3, 'C': 2, 'D': 1, 'G': 0}
+
+def astar(start, goal):
+    open_list = [(h[start], 0, start, [start])]
+
+    while open_list:
+        open_list.sort()
+        f, g, node, path = open_list.pop(0)
+
+        if node == goal:
+            return path, g
+
+        for n, cost in graph[node].items():
+            new_g = g + cost
+            new_f = new_g + h[n]
+            open_list.append((new_f, new_g, n, path + [n]))
+
+path, cost = astar('S', 'G')
+print("Path:", path)
+print("Cost:", cost)
+
+
+#3a
+
+from sklearn.datasets import load_iris
+from sklearn.model_selection import train_test_split
+from sklearn.naive_bayes import GaussianNB
+from sklearn.metrics import accuracy_score, confusion_matrix
+
+d = load_iris()
+X, x, Y, y = train_test_split(d.data, d.target, test_size=0.3, random_state=42)
+m = GaussianNB().fit(X, Y)
+p = m.predict(x)
+
+print("Predicted:", p)
+print("Actual:", y)
+print("Accuracy:", accuracy_score(y, p) * 100, "%")
+print("Confusion Matrix:\n", confusion_matrix(y, p))
+
+
+#3b 
+from sklearn.feature_extraction.text import CountVectorizer
+from sklearn.model_selection import train_test_split
+from sklearn.naive_bayes import MultinomialNB
+from sklearn.metrics import accuracy_score, confusion_matrix
+
+d = ["Win money now", "Free prize", "Meeting tomorrow", "Report attached"]
+y = [1, 1, 0, 0]
+
+X = CountVectorizer().fit_transform(d)
+a, b, c, e = train_test_split(X, y, test_size=0.5, random_state=42)
+p = MultinomialNB().fit(a, c).predict(b)
+
+print("Predicted:", p)
+print("Actual:", e)
+print("Accuracy:", accuracy_score(e, p) * 100, "%")
+print("Confusion Matrix:\n", confusion_matrix(e, p))
