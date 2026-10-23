@@ -1,0 +1,83 @@
+#8
+
+PROGRAM
+import numpy as np
+from sklearn.cluster import KMeans, AgglomerativeClustering
+from sklearn.metrics import silhouette_score
+from scipy.cluster.hierarchy import dendrogram, linkage
+import matplotlib.pyplot as plt
+ 
+np.random.seed(42)
+ 
+# Mall Customer Segmentation dataset (Annual Income vs Spending Score)
+# 5 natural customer segments, in the spirit of the classic
+# real-world mall-customer clustering dataset
+n_per_cluster = 40
+centers = [(25, 20), (25, 80), (55, 50), (85, 20), (85, 80)]
+X = []
+for cx, cy in centers:
+   pts = np.random.randn(n_per_cluster, 2) * [6, 8] + [cx, cy]
+   X.append(pts)
+X = np.vstack(X)
+X = np.clip(X, 1, 100)
+np.random.shuffle(X)
+ 
+# ---- K-Means Clustering ----
+kmeans = KMeans(n_clusters=5, random_state=42, n_init=10)
+km_labels = kmeans.fit_predict(X)
+km_sil = silhouette_score(X, km_labels)
+print("K-Means cluster centers:\n", kmeans.cluster_centers_.round(2))
+print("K-Means Silhouette Score:", round(km_sil, 3))
+ 
+# ---- Agglomerative Hierarchical Clustering ----
+agg = AgglomerativeClustering(n_clusters=5, linkage='ward')
+agg_labels = agg.fit_predict(X)
+agg_sil = silhouette_score(X, agg_labels)
+print("Hierarchical Clustering Silhouette Score:", round(agg_sil, 3))
+ 
+# ---- Dendrogram ----
+Z = linkage(X, method='ward')
+dendrogram(Z, truncate_mode='lastp', p=15)
+plt.title("Dendrogram (Ward Linkage)")
+plt.xlabel("Sample clusters (truncated)")
+plt.ylabel("Distance")
+plt.show()
+
+#10 
+
+from sklearn.datasets import load_breast_cancer
+from sklearn.model_selection import train_test_split
+from sklearn.preprocessing import StandardScaler
+from sklearn.neural_network import MLPClassifier
+from sklearn.metrics import accuracy_score, confusion_matrix, classification_report
+import matplotlib.pyplot as plt
+ 
+data = load_breast_cancer()
+X_train, X_test, y_train, y_test = train_test_split(
+   data.data, data.target, test_size=0.3,
+   random_state=42, stratify=data.target)
+ 
+scaler = StandardScaler()
+X_train = scaler.fit_transform(X_train)
+X_test = scaler.transform(X_test)
+ 
+model = MLPClassifier(hidden_layer_sizes=(16, 8), activation='relu',
+                     solver='adam', max_iter=1000, random_state=42)
+model.fit(X_train, y_train)
+y_pred = model.predict(X_test)
+ 
+print("Dataset shape:", data.data.shape)
+print("Classes:", list(data.target_names))
+print("Training loss (final):", round(model.loss_, 4))
+print("Number of iterations run:", model.n_iter_)
+print("Accuracy:", round(accuracy_score(y_test, y_pred) * 100, 2), "%")
+print("Confusion Matrix:\n", confusion_matrix(y_test, y_pred))
+print(classification_report(y_test, y_pred,
+                           target_names=data.target_names))
+ 
+plt.plot(model.loss_curve_)
+plt.xlabel("Iteration (epoch)")
+plt.ylabel("Training loss")
+plt.title("Loss Curve")
+plt.grid(alpha=0.3)
+plt.show()
