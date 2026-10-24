@@ -1,0 +1,158 @@
+#chat server
+import java.net.*;
+import java.io.*;
+
+class ChatServer {
+    public static void main(String[] args) throws Exception {
+        ServerSocket ss = new ServerSocket(5000);
+        Socket s = ss.accept();
+
+        BufferedReader in = new BufferedReader(
+            new InputStreamReader(s.getInputStream()));
+        PrintWriter out = new PrintWriter(s.getOutputStream(), true);
+        BufferedReader kb = new BufferedReader(
+            new InputStreamReader(System.in));
+
+        System.out.println("Client: " + in.readLine());
+
+        System.out.print("Enter reply: ");
+        out.println(kb.readLine());
+
+        s.close();
+        ss.close();
+    }
+}
+
+#chat client
+import java.net.*;
+import java.io.*;
+
+class ChatClient {
+    public static void main(String[] args) throws Exception {
+        Socket s = new Socket("localhost", 5000);
+
+        BufferedReader kb = new BufferedReader(
+            new InputStreamReader(System.in));
+        BufferedReader in = new BufferedReader(
+            new InputStreamReader(s.getInputStream()));
+        PrintWriter out = new PrintWriter(s.getOutputStream(), true);
+
+        System.out.print("Enter message: ");
+        out.println(kb.readLine());
+
+        System.out.println("Server: " + in.readLine());
+
+        s.close();
+    }
+}
+
+#DNS
+
+import java.util.Scanner;
+
+class DNS {
+public static void main(String[] args) {
+Scanner sc = new Scanner(System.in);
+
+    String[] domain = {"www.google.com", "www.yahoo.com",
+                       "www.facebook.com", "www.annauniv.edu"};
+
+    String[] ip = {"142.250.183.14", "74.6.143.25",
+                   "157.240.241.35", "14.139.161.4"};
+
+    while (true) {
+        System.out.println("\n1. DNS Lookup");
+        System.out.println("2. Reverse DNS");
+        System.out.println("3. Exit");
+        System.out.print("Enter choice: ");
+        int ch = sc.nextInt();
+        sc.nextLine();
+
+        if (ch == 1) {
+            System.out.print("Enter domain name: ");
+            String name = sc.nextLine();
+            boolean found = false;
+
+            for (int i = 0; i < domain.length; i++) {
+                if (domain[i].equalsIgnoreCase(name)) {
+                    System.out.println("IP Address: " + ip[i]);
+                    found = true;
+                }
+            }
+
+            if (!found)
+                System.out.println("Domain not found");
+
+        } else if (ch == 2) {
+            System.out.print("Enter IP address: ");
+            String addr = sc.nextLine();
+            boolean found = false;
+
+            for (int i = 0; i < ip.length; i++) {
+                if (ip[i].equals(addr)) {
+                    System.out.println("Domain: " + domain[i]);
+                    found = true;
+                }
+            }
+
+            if (!found)
+                System.out.println("IP not found");
+
+        } else if (ch == 3) {
+            break;
+        } else {
+            System.out.println("Invalid choice");
+        }
+    }
+
+    sc.close();
+}
+
+}
+
+#sub cipher
+import java.util.Scanner;
+
+class SubstitutionCipher {
+static String alphabet = "abcdefghijklmnopqrstuvwxyz";
+static String key = "qwertyuiopasdfghjklzxcvbnm";
+
+static String encrypt(String text) {
+    String result = "";
+    for (int i = 0; i < text.length(); i++) {
+        char ch = text.charAt(i);
+        if (ch >= 'a' && ch <= 'z')
+            result += key.charAt(alphabet.indexOf(ch));
+        else
+            result += ch;
+    }
+    return result;
+}
+
+static String decrypt(String text) {
+    String result = "";
+    for (int i = 0; i < text.length(); i++) {
+        char ch = text.charAt(i);
+        if (ch >= 'a' && ch <= 'z')
+            result += alphabet.charAt(key.indexOf(ch));
+        else
+            result += ch;
+    }
+    return result;
+}
+
+public static void main(String[] args) {
+    Scanner sc = new Scanner(System.in);
+
+    System.out.print("Enter plaintext: ");
+    String text = sc.nextLine().toLowerCase();
+
+    String encrypted = encrypt(text);
+    System.out.println("Encrypted text: " + encrypted);
+
+    System.out.println("Decrypted text: " + decrypt(encrypted));
+
+    sc.close();
+}
+
+}
